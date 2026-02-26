@@ -110,6 +110,7 @@
 	ffmpeg
 	fastfetch
 	distrobox
+	distroshelf
 	dnsmasq
 	mpv
 	yt-dlp
@@ -118,6 +119,7 @@
 	vivaldi-ffmpeg-codecs
 	protonvpn-gui
 	qbittorrent
+	librewolf
   ];
 
   # This enables flatpak
@@ -137,10 +139,10 @@ virtualisation.podman = {
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+   programs.gnupg.agent = {
+     enable = true;
+     enableSSHSupport = true;
+   };
 
   # List services that you want to enable:
 
