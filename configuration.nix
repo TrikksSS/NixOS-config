@@ -17,7 +17,7 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.luks.devices."luks-8232c676-6702-4aa6-9489-d016aa336212".device = "/dev/disk/by-uuid/8232c676-6702-4aa6-9489-d016aa336212";
+  boot.initrd.luks.devices."luks-6fe9d4cc-5da8-4d74-b2a5-2be3b32be23a".device = "/dev/disk/by-uuid/6fe9d4cc-5da8-4d74-b2a5-2be3b32be23a";
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -47,12 +47,11 @@
   };
 
   # Enable the X11 windowing system.
-  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  # Enable the GNOME Desktop Environment.
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -83,13 +82,22 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.parker = {
+  users.users."parker" = {
     isNormalUser = true;
     description = "parker";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      kdePackages.kate
-    #  thunderbird
+	distrobox
+	distroshelf
+	mpv
+	yt-dlp
+	proton-vpn
+	qbittorrent
+	librewolf
+	pkgs.ktailctl
+	tealdeer
+	ghostty
+	ncdu
     ];
   };
 
@@ -102,27 +110,39 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-	 vim
-	wget
-	git
-	alacritty
-	php	
-	ffmpeg
-	fastfetch
-	distrobox
-	distroshelf
-	dnsmasq
-	mpv
-	yt-dlp
-	bitwarden-desktop
-	vivaldi
-	vivaldi-ffmpeg-codecs
-	protonvpn-gui
-	qbittorrent
-	librewolf
+    vim
+    wget
+    git
+    php	
+    ffmpeg
+    fastfetch
+    dnsmasq
   ];
 
-  # This enables flatpak
+
+  # 1. Enable the service and the firewall
+  services.tailscale.enable = true;
+  networking.nftables.enable = true;
+  networking.firewall = {
+    enable = true;
+    # Always allow traffic from your Tailscale network
+    trustedInterfaces = [ config.services.tailscale.interfaceName ];
+    # Allow the Tailscale UDP port through the firewall
+    allowedUDPPorts = [ config.services.tailscale.port ];
+  };
+
+  # 2. Force tailscaled to use nftables (Critical for clean nftables-only systems)
+  # This avoids the "iptables-compat" translation layer issues.
+  systemd.services.tailscaled.serviceConfig.Environment = [ 
+    "TS_DEBUG_FIREWALL_MODE=nftables" 
+  ];
+
+  # 3. Optimization: Prevent systemd from waiting for network online 
+  # (Optional but recommended for faster boot with VPNs)
+  systemd.network.wait-online.enable = false; 
+  boot.initrd.systemd.network.wait-online.enable = false;
+
+    # This enables flatpak
    services.flatpak.enable = true;
 
   # This enables virtualization for distrobox
@@ -134,7 +154,15 @@ virtualisation.podman = {
   # This enables Virt-Manager/QEMU
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
-
+  
+  #This is for 1Password since its a special little princess
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    # Certain features, including CLI integration and system authentication support,
+    # require enabling PolKit integration on some desktop environments (e.g. Plasma).
+    polkitPolicyOwners = [ "yourUsernameHere" ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -161,6 +189,6 @@ virtualisation.podman = {
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "26.05"; # Did you read the comment?
 
 }
