@@ -17,7 +17,7 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.luks.devices."luks-6fe9d4cc-5da8-4d74-b2a5-2be3b32be23a".device = "/dev/disk/by-uuid/6fe9d4cc-5da8-4d74-b2a5-2be3b32be23a";
+  boot.initrd.luks.devices."luks-2fc53874-8b13-4e3c-82fb-c367815823fb".device = "/dev/disk/by-uuid/2fc53874-8b13-4e3c-82fb-c367815823fb";
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -47,11 +47,12 @@
   };
 
   # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -82,12 +83,13 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."parker" = {
+  users.users."michael" = {
     isNormalUser = true;
-    description = "parker";
+    description = "michael";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-	distrobox
+      kdePackages.kate
+    	distrobox
 	distroshelf
 	mpv
 	yt-dlp
@@ -105,7 +107,7 @@
   programs.firefox.enable = true;
 
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+ # nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -116,40 +118,24 @@
     php	
     ffmpeg
     fastfetch
-    dnsmasq
-  ];
+    dnsmasq 
+ ];
 
 
-  # 1. Enable the service and the firewall
-  services.tailscale.enable = true;
-  networking.nftables.enable = true;
-  networking.firewall = {
-    enable = true;
-    # Always allow traffic from your Tailscale network
-    trustedInterfaces = [ config.services.tailscale.interfaceName ];
-    # Allow the Tailscale UDP port through the firewall
-    allowedUDPPorts = [ config.services.tailscale.port ];
-  };
-
-  # 2. Force tailscaled to use nftables (Critical for clean nftables-only systems)
-  # This avoids the "iptables-compat" translation layer issues.
-  systemd.services.tailscaled.serviceConfig.Environment = [ 
-    "TS_DEBUG_FIREWALL_MODE=nftables" 
-  ];
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
 
   # 3. Optimization: Prevent systemd from waiting for network online 
   # (Optional but recommended for faster boot with VPNs)
   systemd.network.wait-online.enable = false; 
   boot.initrd.systemd.network.wait-online.enable = false;
 
-    # This enables flatpak
-   services.flatpak.enable = true;
-
   # This enables virtualization for distrobox
 virtualisation.podman = {
   enable = true;
   dockerCompat = true;
-};
+ };
+
 
   # This enables Virt-Manager/QEMU
   virtualisation.libvirtd.enable = true;
@@ -161,12 +147,12 @@ virtualisation.podman = {
     enable = true;
     # Certain features, including CLI integration and system authentication support,
     # require enabling PolKit integration on some desktop environments (e.g. Plasma).
-    polkitPolicyOwners = [ "yourUsernameHere" ];
+    polkitPolicyOwners = [ "michael" ];
   };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
-  # programs.mtr.enable = true;
+   programs.mtr.enable = true;
    programs.gnupg.agent = {
      enable = true;
      enableSSHSupport = true;
@@ -175,7 +161,7 @@ virtualisation.podman = {
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+   services.openssh.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
