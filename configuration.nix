@@ -92,7 +92,19 @@
     description = "parker";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    #  thunderbird
+    	distrobox
+	distroshelf
+	mpv
+	yt-dlp
+	proton-vpn
+	qbittorrent
+	librewolf
+	pkgs.ktailctl
+	tealdeer
+	ghostty
+	ncdu
+	pkgs.prismlauncher
+	htop
     ];
   };
 
@@ -105,10 +117,48 @@
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
    environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
-	git
+    vim
+    wget
+    git
+    php
+    ffmpeg
+    fastfetch
+    dnsmasq
+    pkgs.gnome-disk-utility
   ];
+
+  # 3. Optimization: Prevent systemd from waiting for network online
+  # (Optional but recommended for faster boot with VPNs)
+  systemd.network.wait-online.enable = false;
+  boot.initrd.systemd.network.wait-online.enable = false;
+
+  # This enables virtualization for distrobox
+virtualisation.podman = {
+  enable = true;
+  dockerCompat = true;
+ };
+
+  #Enable flatpak (dont forget to add the flathub repo)
+  services.flatpak.enable = true;
+  #Enable Steam
+  programs.steam = {
+  enable = true;
+};
+  #Enable gameMode
+  programs.gamemode.enable = true;
+
+  # This enables Virt-Manager/QEMU
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+
+  #This is for 1Password since its a special little princess
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    # Certain features, including CLI integration and system authentication support,
+    # require enabling PolKit integration on some desktop environments (e.g. Plasma).
+    polkitPolicyOwners = [ "parker" ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
