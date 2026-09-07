@@ -154,7 +154,12 @@ virtualisation.podman = {
 
   #Enable flatpak (dont forget to add the flathub repo)
   services.flatpak.enable = true;
-
+  #Enable Steam
+  programs.steam = {
+  enable = true;
+};
+  #Enable gameMode
+  programs.gamemode.enable = true;
 
   # This enables Virt-Manager/QEMU
   virtualisation.libvirtd.enable = true;
