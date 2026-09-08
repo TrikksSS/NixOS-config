@@ -107,6 +107,7 @@
 	ncdu
 	pkgs.prismlauncher
 	htop
+	bat
     ];
   };
 
