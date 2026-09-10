@@ -53,6 +53,14 @@
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   
+  programs.niri.enable = true;
+
+  security.polkit.enable = true; # polkit
+ services.gnome.gnome-keyring.enable = true; # secret service
+ security.pam.services.swaylock = {};
+
+ programs.waybar.enable = true; # top bar, make sure to disable in ~/.config/niri/config.kdl
+
  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -127,6 +135,10 @@
     fastfetch
     dnsmasq
     pkgs.gnome-disk-utility
+    alacritty
+    fuzzel
+    swaylock
+    swayidle
   ];
 
   # 3. Optimization: Prevent systemd from waiting for network online
