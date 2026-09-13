@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+	./luks.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -19,7 +20,6 @@
 
   boot.kernelParams = [ "mitigations=off" ];
 
-  boot.initrd.luks.devices."luks-b3f288d2-2f13-4485-a92f-9873a8db58fa".device = "/dev/disk/by-uuid/b3f288d2-2f13-4485-a92f-9873a8db58fa";
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
